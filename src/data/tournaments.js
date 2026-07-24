@@ -1,8 +1,8 @@
-// 팀 공용 입금 계좌 — 대회별로 계좌를 따로 쓰지 않는 한 공통으로 사용
+// 팀 공용 입금 계좌 — 대회별로 커스텀 계좌를 지정하지 않으면 이 기본 계좌 사용
 export const BANK_INFO = {
-  bankName: '국민은행',
-  bankAccount: '123456-04-789012',
-  bankHolder: 'Wolves Icehockey Club',
+  bankName: '하나은행',
+  bankAccount: '21891041935107',
+  bankHolder: '김덕준',
 };
 
 // 대회별 서류함 — 실제 파일은 데모용 placeholder (public/docs)

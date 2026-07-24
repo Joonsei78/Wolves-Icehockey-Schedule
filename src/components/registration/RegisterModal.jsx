@@ -37,6 +37,9 @@ export default function RegisterModal({ tournament, user, registrations, onClose
   const names = getRegisteredNames(tournament, registrations);
   const myRecord = getMyRegistration(tournament.id, registrations, user?.id);
   const isFull = tournament.status === 'closed' || names.length >= tournament.slotsTotal;
+  const bankInfo = tournament.bankAccount
+    ? { bankName: tournament.bankName, bankAccount: tournament.bankAccount, bankHolder: tournament.bankHolder }
+    : BANK_INFO;
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -73,7 +76,7 @@ export default function RegisterModal({ tournament, user, registrations, onClose
   };
 
   const copyAccount = () => {
-    navigator.clipboard?.writeText(BANK_INFO.bankAccount);
+    navigator.clipboard?.writeText(bankInfo.bankAccount);
   };
 
   return (
@@ -260,8 +263,8 @@ export default function RegisterModal({ tournament, user, registrations, onClose
               <label>입금 계좌</label>
               <div className="bank-box">
                 <div>
-                  <div className="bank-box__account">{BANK_INFO.bankName} {BANK_INFO.bankAccount}</div>
-                  <div className="bank-box__holder">예금주: {BANK_INFO.bankHolder}</div>
+                  <div className="bank-box__account">{bankInfo.bankName} {bankInfo.bankAccount}</div>
+                  <div className="bank-box__holder">예금주: {bankInfo.bankHolder}</div>
                 </div>
                 <button type="button" className="btn btn-outline btn-sm" onClick={copyAccount}>복사</button>
               </div>

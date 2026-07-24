@@ -15,7 +15,15 @@ const mapTournament = (row) => ({
   description: row.description,
   status: row.status,
   docs: DEFAULT_DOCS,
+  bankName: row.bank_name,
+  bankAccount: row.bank_account,
+  bankHolder: row.bank_holder,
 });
+
+const bankFields = (form) =>
+  form.useCustomBank
+    ? { bank_name: form.bankName, bank_account: form.bankAccount, bank_holder: form.bankHolder }
+    : { bank_name: null, bank_account: null, bank_holder: null };
 
 const mapRegistration = (row) => ({
   id: row.id,
@@ -53,6 +61,7 @@ export async function insertTournament(form) {
       slots_total: Number(form.slotsTotal),
       fee_per_person: Number(form.feePerPerson),
       description: form.description,
+      ...bankFields(form),
     })
     .select()
     .single();
@@ -74,6 +83,7 @@ export async function updateTournament(id, form) {
       fee_per_person: Number(form.feePerPerson),
       description: form.description,
       status: form.status,
+      ...bankFields(form),
     })
     .eq('id', id)
     .select()

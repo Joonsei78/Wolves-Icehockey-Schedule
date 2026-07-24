@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Icon from '../components/icons/Icon';
-import { ageGroups } from '../data/tournaments';
+import { ageGroups, BANK_INFO } from '../data/tournaments';
 import { getTournamentRoster } from '../utils/registrations';
 import { downloadCSV } from '../utils/csv';
 import { getSubmissionDownloadUrl } from '../lib/api';
@@ -27,6 +27,10 @@ const emptyForm = {
   feePerPerson: '',
   description: '',
   status: 'open',
+  useCustomBank: false,
+  bankName: '',
+  bankAccount: '',
+  bankHolder: '',
 };
 
 const toForm = (t) => ({
@@ -40,6 +44,10 @@ const toForm = (t) => ({
   feePerPerson: String(t.feePerPerson),
   description: t.description || '',
   status: t.status,
+  useCustomBank: !!t.bankAccount,
+  bankName: t.bankName || '',
+  bankAccount: t.bankAccount || '',
+  bankHolder: t.bankHolder || '',
 });
 
 export default function AdminPage({ tournaments, registrations, onAddTournament, onUpdateTournament }) {
@@ -162,8 +170,54 @@ export default function AdminPage({ tournaments, registrations, onAddTournament,
           </div>
         )}
 
+        <div className="field">
+          <label>입금 계좌</label>
+          <div className="role-toggle">
+            <button
+              type="button"
+              className={!form.useCustomBank ? 'active' : ''}
+              onClick={() => setForm((f) => ({ ...f, useCustomBank: false }))}
+            >
+              기본 계좌 사용
+            </button>
+            <button
+              type="button"
+              className={form.useCustomBank ? 'active' : ''}
+              onClick={() => setForm((f) => ({ ...f, useCustomBank: true }))}
+            >
+              직접 입력
+            </button>
+          </div>
+        </div>
+
+        {form.useCustomBank ? (
+          <>
+            <div className="field-row">
+              <div className="field">
+                <label>은행명</label>
+                <input required placeholder="예: 하나은행" value={form.bankName} onChange={update('bankName')} />
+              </div>
+              <div className="field">
+                <label>계좌번호</label>
+                <input required placeholder="예: 21891041935107" value={form.bankAccount} onChange={update('bankAccount')} />
+              </div>
+            </div>
+            <div className="field">
+              <label>예금주</label>
+              <input required placeholder="예: 김덕준" value={form.bankHolder} onChange={update('bankHolder')} />
+            </div>
+          </>
+        ) : (
+          <div className="bank-box">
+            <div>
+              <div className="bank-box__account">{BANK_INFO.bankName} {BANK_INFO.bankAccount}</div>
+              <div className="bank-box__holder">예금주: {BANK_INFO.bankHolder}</div>
+            </div>
+          </div>
+        )}
+
         <p style={{ fontSize: 12.5, color: 'var(--sub)' }}>
-          * 입금 계좌 정보는 팀 공용 계좌가 자동 적용됩니다. 개최공문·요강 등 서류 업로드는 이후 단계에서 지원됩니다.
+          * 개최공문·요강 등 서류 업로드는 이후 단계에서 지원됩니다.
         </p>
 
         {error && <p style={{ fontSize: 13, color: 'var(--primary-dark)', fontWeight: 600 }}>{error}</p>}
