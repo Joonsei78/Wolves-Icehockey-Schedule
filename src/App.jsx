@@ -164,6 +164,7 @@ export default function App() {
         currentPage={currentPage}
         onNavigate={setCurrentPage}
         onLoginClick={() => setAuthView('login')}
+        onLogout={handleLogout}
       />
 
       {currentPage === 'schedule' && (

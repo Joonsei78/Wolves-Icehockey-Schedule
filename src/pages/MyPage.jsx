@@ -37,17 +37,17 @@ export default function MyPage({ user, tournaments, registrations, onLogout, onP
       </div>
 
       <div className="card" style={{ padding: 22, marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <span className="profile-chip__avatar" style={{ width: 48, height: 48, fontSize: 18 }}>
+        <div className="mypage-profile-header">
+          <div className="mypage-profile-info">
+            <span className="profile-chip__avatar" style={{ width: 48, height: 48, fontSize: 18, flexShrink: 0 }}>
               {profile.name[0]}
             </span>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 16 }}>{profile.name}</div>
-              <div style={{ color: 'var(--sub)', fontSize: 13.5 }}>{user.email}</div>
+            <div style={{ minWidth: 0 }}>
+              <div className="mypage-profile-info__name">{profile.name}</div>
+              <div className="mypage-profile-info__email">{user.email}</div>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="mypage-profile-actions">
             <button className="btn btn-outline btn-sm" onClick={() => setEditing((v) => !v)}>
               <Icon name="edit" size={15} />
               {editing ? '취소' : '프로필 수정'}
@@ -90,7 +90,7 @@ export default function MyPage({ user, tournaments, registrations, onLogout, onP
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {myRegistrations.map(({ record, tournament: t }) => (
-            <div key={t.id} className="card" style={{ padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+            <div key={t.id} className="card reg-card" style={{ padding: 18 }}>
               <div>
                 <div style={{ fontWeight: 700, marginBottom: 4 }}>{t.title}</div>
                 <div className="card__meta">
@@ -102,7 +102,7 @@ export default function MyPage({ user, tournaments, registrations, onLogout, onP
                   신청 선수: {record.playerName}
                 </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+              <div className="reg-card__status">
                 <span className="card__age-badge" style={{ background: 'var(--primary-soft)', color: 'var(--primary-dark)', border: 'none' }}>
                   {t.ageGroup}
                 </span>
