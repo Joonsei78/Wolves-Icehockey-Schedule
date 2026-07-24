@@ -17,13 +17,13 @@ import {
   insertRegistration,
   markRegistrationPaid,
   submitRegistrationFile,
+  fetchProfile,
 } from './lib/api';
 
 const mapSupabaseUser = (u) => ({
   id: u.id,
   email: u.email,
   name: u.user_metadata?.name || u.email.split('@')[0],
-  role: u.user_metadata?.role === 'admin' ? 'admin' : 'member',
 });
 
 export default function App() {
@@ -44,12 +44,31 @@ export default function App() {
   }, [toast]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session ? mapSupabaseUser(session.user) : null);
-    });
+    const syncUser = async (session) => {
+      if (!session) {
+        setUser(null);
+        return;
+      }
+      const base = mapSupabaseUser(session.user);
+      setUser(base);
+
+      // profiles.role이 관리자 여부의 유일한 기준 (Table Editor에서 바꾸면 새로고침 시 반영됨)
+      try {
+        const profile = await fetchProfile(session.user.id, {
+          name: base.name,
+          email: base.email,
+          role: session.user.user_metadata?.role === 'admin' ? 'admin' : 'member',
+        });
+        setUser((u) => (u ? { ...u, role: profile.role === 'admin' ? 'admin' : 'member' } : u));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => syncUser(session));
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session ? mapSupabaseUser(session.user) : null);
+      syncUser(session);
     });
 
     return () => subscription.subscription.unsubscribe();
