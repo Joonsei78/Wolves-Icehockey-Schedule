@@ -29,9 +29,9 @@ export default function LoginModal({ onClose, onSwitchToSignup, onLogin, onOAuth
               <Icon name="user" size={18} />
               Google로 계속하기
             </button>
-            <button type="button" className="oauth-btn" onClick={() => onOAuthLogin('kakao')}>
+            <button type="button" className="oauth-btn" disabled>
               <Icon name="user" size={18} />
-              카카오로 계속하기
+              카카오로 계속하기 (준비중)
             </button>
             <div className="divider">또는</div>
 

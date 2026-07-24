@@ -31,12 +31,12 @@ export default function SignupModal({ onClose, onSwitchToLogin, onSignup, onOAut
               <Icon name="user" size={18} />
               Google로 시작하기
             </button>
-            <button type="button" className="oauth-btn" onClick={() => onOAuthLogin('kakao')}>
+            <button type="button" className="oauth-btn" disabled>
               <Icon name="user" size={18} />
-              카카오로 시작하기
+              카카오로 시작하기 (준비중)
             </button>
             <p style={{ fontSize: 12, color: 'var(--sub)', textAlign: 'center', marginTop: -6 }}>
-              Google·카카오는 가입 시 일반 회원으로 시작하며, 관리자 권한은 이후 별도로 부여할 수 있어요.
+              Google은 가입 시 일반 회원으로 시작하며, 관리자 권한은 이후 별도로 부여할 수 있어요.
             </p>
 
             <div className="divider">또는</div>
