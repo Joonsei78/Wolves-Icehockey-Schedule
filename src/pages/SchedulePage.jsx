@@ -15,15 +15,17 @@ export default function SchedulePage({ tournaments, registrations, userId, onReg
   );
 
   const filtered = useMemo(() => {
-    return tournaments.filter((t) => {
-      const matchKeyword =
-        keyword.trim() === '' ||
-        t.title.includes(keyword.trim()) ||
-        t.location.includes(keyword.trim());
-      const matchAge = ageGroup === '전체' || t.ageGroup === ageGroup;
-      const matchMonth = activeMonth === 'all' || t.month === activeMonth;
-      return matchKeyword && matchAge && matchMonth;
-    });
+    return tournaments
+      .filter((t) => {
+        const matchKeyword =
+          keyword.trim() === '' ||
+          t.title.includes(keyword.trim()) ||
+          t.location.includes(keyword.trim());
+        const matchAge = ageGroup === '전체' || t.ageGroup === ageGroup;
+        const matchMonth = activeMonth === 'all' || t.month === activeMonth;
+        return matchKeyword && matchAge && matchMonth;
+      })
+      .sort((a, b) => b.startDate.localeCompare(a.startDate));
   }, [tournaments, keyword, ageGroup, activeMonth]);
 
   return (
