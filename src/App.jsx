@@ -13,6 +13,7 @@ import { supabase } from './lib/supabaseClient';
 import {
   fetchTournaments,
   insertTournament,
+  updateTournament,
   fetchRegistrations,
   insertRegistration,
   markRegistrationPaid,
@@ -157,6 +158,14 @@ export default function App() {
     setToast('대회가 등록되었습니다.');
   };
 
+  const handleUpdateTournament = async (id, form) => {
+    const updated = await updateTournament(id, form);
+    setTournaments((prev) =>
+      prev.map((t) => (t.id === id ? updated : t)).sort((a, b) => a.startDate.localeCompare(b.startDate))
+    );
+    setToast('대회 정보가 수정되었습니다.');
+  };
+
   return (
     <div>
       <Header
@@ -186,7 +195,12 @@ export default function App() {
       )}
 
       {currentPage === 'admin' && user?.role === 'admin' && (
-        <AdminPage tournaments={tournaments} registrations={registrations} onAddTournament={handleAddTournament} />
+        <AdminPage
+          tournaments={tournaments}
+          registrations={registrations}
+          onAddTournament={handleAddTournament}
+          onUpdateTournament={handleUpdateTournament}
+        />
       )}
 
       <Footer />

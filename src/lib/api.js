@@ -60,6 +60,28 @@ export async function insertTournament(form) {
   return mapTournament(data);
 }
 
+export async function updateTournament(id, form) {
+  const { data, error } = await supabase
+    .from('tournaments')
+    .update({
+      title: form.title,
+      location: form.location,
+      age_group: form.ageGroup,
+      start_date: form.startDate,
+      end_date: form.endDate,
+      deadline: form.deadline,
+      slots_total: Number(form.slotsTotal),
+      fee_per_person: Number(form.feePerPerson),
+      description: form.description,
+      status: form.status,
+    })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return mapTournament(data);
+}
+
 export async function fetchRegistrations() {
   const { data, error } = await supabase.from('registrations').select('*');
   if (error) throw error;

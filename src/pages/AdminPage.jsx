@@ -26,21 +26,54 @@ const emptyForm = {
   slotsTotal: '',
   feePerPerson: '',
   description: '',
+  status: 'open',
 };
 
-export default function AdminPage({ tournaments, registrations, onAddTournament }) {
+const toForm = (t) => ({
+  title: t.title,
+  location: t.location,
+  ageGroup: t.ageGroup,
+  startDate: t.startDate,
+  endDate: t.endDate,
+  deadline: t.deadline,
+  slotsTotal: String(t.slotsTotal),
+  feePerPerson: String(t.feePerPerson),
+  description: t.description || '',
+  status: t.status,
+});
+
+export default function AdminPage({ tournaments, registrations, onAddTournament, onUpdateTournament }) {
   const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  const startEdit = (t) => {
+    setEditingId(t.id);
+    setForm(toForm(t));
+    setError(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setError(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
     try {
-      await onAddTournament(form);
+      if (editingId) {
+        await onUpdateTournament(editingId, form);
+        setEditingId(null);
+      } else {
+        await onAddTournament(form);
+      }
       setForm(emptyForm);
     } catch (err) {
       setError(err.message);
@@ -63,7 +96,7 @@ export default function AdminPage({ tournaments, registrations, onAddTournament 
   return (
     <div className="container" style={{ paddingTop: 40, paddingBottom: 48 }}>
       <div className="section-title">
-        <h2>관리자 · 대회 정보 등록</h2>
+        <h2>{editingId ? '관리자 · 대회 정보 수정' : '관리자 · 대회 정보 등록'}</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="card" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 40 }}>
@@ -119,16 +152,33 @@ export default function AdminPage({ tournaments, registrations, onAddTournament 
           <input placeholder="간단한 대회 설명" value={form.description} onChange={update('description')} />
         </div>
 
+        {editingId && (
+          <div className="field">
+            <label>모집 상태</label>
+            <select value={form.status} onChange={update('status')}>
+              <option value="open">모집중</option>
+              <option value="closed">신청마감</option>
+            </select>
+          </div>
+        )}
+
         <p style={{ fontSize: 12.5, color: 'var(--sub)' }}>
           * 입금 계좌 정보는 팀 공용 계좌가 자동 적용됩니다. 개최공문·요강 등 서류 업로드는 이후 단계에서 지원됩니다.
         </p>
 
         {error && <p style={{ fontSize: 13, color: 'var(--primary-dark)', fontWeight: 600 }}>{error}</p>}
 
-        <button type="submit" className="btn" style={{ alignSelf: 'flex-start' }} disabled={submitting}>
-          <Icon name="calendar" size={16} />
-          {submitting ? '등록 중...' : '대회 등록하기'}
-        </button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button type="submit" className="btn" style={{ alignSelf: 'flex-start' }} disabled={submitting}>
+            <Icon name="calendar" size={16} />
+            {submitting ? '저장 중...' : editingId ? '수정 완료' : '대회 등록하기'}
+          </button>
+          {editingId && (
+            <button type="button" className="btn btn-outline" onClick={cancelEdit}>
+              취소
+            </button>
+          )}
+        </div>
       </form>
 
       <div className="section-title">
@@ -144,16 +194,25 @@ export default function AdminPage({ tournaments, registrations, onAddTournament 
             <div key={t.id} className="card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
                 <div>
-                  <div style={{ fontWeight: 700, marginBottom: 4 }}>{t.title}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontWeight: 700 }}>{t.title}</span>
+                    <span className={`annual-status ${t.status === 'closed' ? 'closed' : 'open'}`}>
+                      {t.status === 'closed' ? '신청마감' : '모집중'}
+                    </span>
+                  </div>
                   <div className="card__meta">
                     <Icon name="calendar" size={14} />
                     {fmt(t.startDate)} - {fmt(t.endDate)} · {t.location}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   <span className="card__age-badge" style={{ background: 'var(--primary-soft)', color: 'var(--primary-dark)', border: 'none' }}>
                     {t.ageGroup}
                   </span>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(t)}>
+                    <Icon name="edit" size={14} />
+                    수정
+                  </button>
                   <button
                     type="button"
                     className="btn btn-outline btn-sm"
