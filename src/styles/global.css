@@ -9,9 +9,6 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  height: var(--header-height);
-  display: flex;
-  align-items: center;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
@@ -20,6 +17,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  height: var(--header-height);
 }
 .header__brand {
   display: flex;
@@ -830,6 +828,8 @@
   .header__brand-text { display: none; }
   .profile-chip__name { display: none; }
   .profile-chip { padding: 6px; }
+  /* 로그인 버튼은 햄버거 메뉴 안에만 두어 상단바와 중복되지 않게 함 */
+  .header__actions > .btn { display: none; }
   .hero h1 { font-size: 26px; }
   .filter-bar { margin-top: -20px; }
 }
