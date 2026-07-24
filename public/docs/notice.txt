@@ -1,0 +1,4 @@
+[대회 개최공문] Wolves Icehockey Club
+
+본 문서는 데모용 placeholder 파일입니다.
+실제 대회 개최공문 PDF는 백엔드/파일 저장소 연동(PART 2) 완료 후 각 대회별로 제공됩니다.
