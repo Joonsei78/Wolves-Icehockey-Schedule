@@ -725,6 +725,11 @@
   border-color: #cdf0dd;
   background: #eafbf1;
 }
+.annual-status.upcoming {
+  color: #8a6d00;
+  border-color: #f5e6a8;
+  background: #fdf6df;
+}
 
 @media (max-width: 640px) {
   .annual-month { flex-direction: column; gap: 8px; }

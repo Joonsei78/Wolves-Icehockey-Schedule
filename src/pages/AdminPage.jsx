@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Icon from '../components/icons/Icon';
 import { ageGroups, BANK_INFO } from '../data/tournaments';
 import { getTournamentRoster } from '../utils/registrations';
+import { getStatusInfo } from '../utils/tournamentStatus';
 import { downloadCSV } from '../utils/csv';
 import { getSubmissionDownloadUrl } from '../lib/api';
 
@@ -164,6 +165,7 @@ export default function AdminPage({ tournaments, registrations, onAddTournament,
           <div className="field">
             <label>모집 상태</label>
             <select value={form.status} onChange={update('status')}>
+              <option value="upcoming">예정</option>
               <option value="open">모집중</option>
               <option value="closed">신청마감</option>
             </select>
@@ -244,14 +246,15 @@ export default function AdminPage({ tournaments, registrations, onAddTournament,
         {sorted.map((t) => {
           const roster = getTournamentRoster(t.id, registrations);
           const withFiles = roster.filter((r) => r.submittedFile);
+          const statusInfo = getStatusInfo(t, roster.length);
           return (
             <div key={t.id} className="card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontWeight: 700 }}>{t.title}</span>
-                    <span className={`annual-status ${t.status === 'closed' ? 'closed' : 'open'}`}>
-                      {t.status === 'closed' ? '신청마감' : '모집중'}
+                    <span className={`annual-status ${statusInfo.key === 'open' ? 'open' : statusInfo.key === 'upcoming' ? 'upcoming' : 'closed'}`}>
+                      {statusInfo.key === 'closed' ? '신청마감' : statusInfo.label}
                     </span>
                   </div>
                   <div className="card__meta">

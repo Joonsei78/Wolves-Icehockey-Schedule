@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Icon from '../icons/Icon';
 import { getRegisteredNames, getMyRegistration } from '../../utils/registrations';
+import { getStatusInfo } from '../../utils/tournamentStatus';
 import { BANK_INFO } from '../../data/tournaments';
 import { getSubmissionDownloadUrl } from '../../lib/api';
 
@@ -36,7 +37,7 @@ export default function RegisterModal({ tournament, user, registrations, onClose
 
   const names = getRegisteredNames(tournament, registrations);
   const myRecord = getMyRegistration(tournament.id, registrations, user?.id);
-  const isFull = tournament.status === 'closed' || names.length >= tournament.slotsTotal;
+  const statusInfo = getStatusInfo(tournament, names.length);
   const bankInfo = tournament.bankAccount
     ? { bankName: tournament.bankName, bankAccount: tournament.bankAccount, bankHolder: tournament.bankHolder }
     : BANK_INFO;
@@ -139,7 +140,7 @@ export default function RegisterModal({ tournament, user, registrations, onClose
                   <span>포지션: {myRecord.position} · Hand: {myRecord.hand}</span>
                   <span>연락처: {myRecord.phone}</span>
                 </div>
-              ) : !isFull ? (
+              ) : statusInfo.canRegister ? (
                 <>
                   <div className="field-row">
                     <div className="field">
@@ -194,11 +195,13 @@ export default function RegisterModal({ tournament, user, registrations, onClose
                   {error && <p style={{ fontSize: 13, color: 'var(--primary-dark)', fontWeight: 600 }}>{error}</p>}
                 </>
               ) : (
-                <p style={{ fontSize: 13.5, color: 'var(--sub)' }}>모집이 마감된 대회입니다.</p>
+                <p style={{ fontSize: 13.5, color: 'var(--sub)' }}>
+                  {statusInfo.key === 'upcoming' ? '아직 참가 신청이 시작되지 않았습니다.' : '모집이 마감된 대회입니다.'}
+                </p>
               )}
             </div>
 
-            {user && !myRecord && !isFull && (
+            {user && !myRecord && statusInfo.canRegister && (
               <div className="modal__footer">
                 <button type="submit" className="btn btn-block" disabled={submitting}>
                   {submitting ? '신청 중...' : '신청 완료하기'}

@@ -1,5 +1,6 @@
 import Icon from '../components/icons/Icon';
 import { getRegisteredNames, isRegisteredByMe } from '../utils/registrations';
+import { getStatusInfo } from '../utils/tournamentStatus';
 
 const YEAR = 2026;
 
@@ -33,7 +34,7 @@ export default function AnnualSchedulePage({ tournaments, registrations, userId,
                 <div className="annual-month__rows">
                   {monthTournaments.map((t) => {
                     const names = getRegisteredNames(t, registrations);
-                    const isFull = t.status === 'closed' || names.length >= t.slotsTotal;
+                    const statusInfo = getStatusInfo(t, names.length);
                     const registered = isRegisteredByMe(t.id, registrations, userId);
 
                     return (
@@ -48,8 +49,8 @@ export default function AnnualSchedulePage({ tournaments, registrations, userId,
                           <Icon name="mapPin" size={14} />
                           {t.location}
                         </span>
-                        <span className={`annual-status ${registered ? 'registered' : isFull ? 'closed' : 'open'}`}>
-                          {registered ? '신청완료' : isFull ? '마감' : '모집중'}
+                        <span className={`annual-status ${registered ? 'registered' : statusInfo.key === 'open' ? 'open' : 'closed'}`}>
+                          {registered ? '신청완료' : statusInfo.label}
                         </span>
                       </button>
                     );

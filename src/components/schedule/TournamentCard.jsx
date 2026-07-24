@@ -1,4 +1,5 @@
 import Icon from '../icons/Icon';
+import { getStatusInfo } from '../../utils/tournamentStatus';
 
 const fmt = (dateStr) => {
   const d = new Date(dateStr);
@@ -6,18 +7,18 @@ const fmt = (dateStr) => {
 };
 
 export default function TournamentCard({ tournament, names, registered, onRegisterClick }) {
-  const { title, location, ageGroup, startDate, endDate, deadline, slotsTotal, status } = tournament;
+  const { title, location, ageGroup, startDate, endDate, deadline, slotsTotal } = tournament;
 
   const slotsFilled = names.length;
-  const isFull = status === 'closed' || slotsFilled >= slotsTotal;
+  const statusInfo = getStatusInfo(tournament, slotsFilled);
   const percent = Math.min(100, Math.round((slotsFilled / slotsTotal) * 100));
 
   return (
     <div className="card">
       <div className="card__banner">
         <span className="card__age-badge">{ageGroup}</span>
-        <span className={`card__status ${isFull ? 'closed' : ''}`}>
-          {isFull ? '마감' : '모집중'}
+        <span className={`card__status ${statusInfo.key !== 'open' ? 'closed' : ''}`}>
+          {statusInfo.label}
         </span>
       </div>
 
@@ -46,7 +47,7 @@ export default function TournamentCard({ tournament, names, registered, onRegist
           </button>
           <button
             className="btn btn-sm"
-            disabled={isFull || registered}
+            disabled={!statusInfo.canRegister || registered}
             onClick={() => onRegisterClick(tournament)}
           >
             {registered ? (
@@ -54,7 +55,7 @@ export default function TournamentCard({ tournament, names, registered, onRegist
                 <Icon name="checkCircle" size={15} />
                 신청완료
               </>
-            ) : isFull ? '마감' : '참가 신청'}
+            ) : !statusInfo.canRegister ? statusInfo.label : '참가 신청'}
           </button>
         </div>
       </div>
