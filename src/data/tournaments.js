@@ -12,4 +12,4 @@ export const DEFAULT_DOCS = [
   { key: 'formTemplate', label: '제출서류 양식', filename: '제출서류_양식.txt', url: '/docs/form-template.txt' },
 ];
 
-export const ageGroups = ['전체', 'U8', 'U10', 'U12', 'U14', 'U16'];
+export const ageGroups = ['전체', 'U8', 'U9', 'U10', 'U11', 'U12', '저학년', '고학년'];
