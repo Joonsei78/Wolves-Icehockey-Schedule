@@ -45,25 +45,32 @@ export default function App() {
   }, [toast]);
 
   useEffect(() => {
+    // 탭 포커스가 돌아올 때마다 Supabase가 세션을 재확인하며 onAuthStateChange를 다시 쏘는데,
+    // 같은 사용자면 아무것도 다시 하지 않아야 입력 중인 폼(관리자 등록 폼 등)이 초기화되지 않는다.
+    let syncedUserId = null;
+
     const syncUser = async (session) => {
       if (!session) {
+        syncedUserId = null;
         setUser(null);
         return;
       }
-      const base = mapSupabaseUser(session.user);
-      setUser(base);
+      if (session.user.id === syncedUserId) return;
+      syncedUserId = session.user.id;
 
-      // profiles.role이 관리자 여부의 유일한 기준 (Table Editor에서 바꾸면 새로고침 시 반영됨)
+      const base = mapSupabaseUser(session.user);
+      let role = 'member';
       try {
         const profile = await fetchProfile(session.user.id, {
           name: base.name,
           email: base.email,
           role: session.user.user_metadata?.role === 'admin' ? 'admin' : 'member',
         });
-        setUser((u) => (u ? { ...u, role: profile.role === 'admin' ? 'admin' : 'member' } : u));
+        role = profile.role === 'admin' ? 'admin' : 'member';
       } catch (err) {
         console.error(err);
       }
+      setUser({ ...base, role });
     };
 
     supabase.auth.getSession().then(({ data: { session } }) => syncUser(session));

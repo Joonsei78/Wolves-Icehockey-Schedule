@@ -15,7 +15,8 @@ export default function MyPage({ user, tournaments, registrations, onLogout, onP
   useEffect(() => {
     fetchProfile(user.id, { name: user.name, email: user.email, role: user.role })
       .then((p) => setProfile({ name: p.name, phone: p.phone || '' }));
-  }, [user.id, user.name, user.email, user.role]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.id]);
 
   const myRegistrations = registrations
     .filter((r) => r.userId === user.id)
