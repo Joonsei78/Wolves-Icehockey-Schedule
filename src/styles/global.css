@@ -849,4 +849,14 @@
   .mypage-profile-actions { width: 100%; }
   .mypage-profile-actions .btn { flex: 1; }
   .reg-card__status { flex-direction: row; align-items: center; }
+
+  /* 좁은 화면에서는 날짜/숫자 입력창이 너무 좁아져 내부 표시가 눌리므로 세로로 쌓음 */
+  .field-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .field-row .field {
+    flex: none;
+    width: 100%;
+  }
 }
